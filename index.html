@@ -1,1 +1,2486 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Night Survival 3D</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    overflow:hidden;
+    background:#000;
+    font-family:Arial,"Microsoft JhengHei",sans-serif;
+    color:white;
+}
+
+canvas{
+    display:block;
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:fixed;
+    top:15px;
+    left:15px;
+    width:230px;
+    z-index:10;
+    pointer-events:none;
+}
+
+.barBox{
+    margin-bottom:8px;
+}
+
+.barTitle{
+    font-size:14px;
+    margin-bottom:3px;
+}
+
+.bar{
+    width:220px;
+    height:18px;
+    background:#222;
+    border:2px solid #555;
+}
+
+#hpBar{
+    height:100%;
+    width:100%;
+    background:#d62828;
+}
+
+#staminaBar{
+    height:100%;
+    width:100%;
+    background:#f5c542;
+}
+
+#money{
+    margin-top:10px;
+    font-size:18px;
+}
+
+/* =========================
+   Crosshair
+========================= */
+
+#crosshair{
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:10px;
+    height:10px;
+    border:2px solid white;
+    border-radius:50%;
+    z-index:20;
+    pointer-events:none;
+}
+
+/* =========================
+   Minimap
+========================= */
+
+#minimap{
+    position:fixed;
+    right:20px;
+    top:20px;
+
+    width:200px;
+    height:200px;
+
+    background:rgba(0,0,0,.65);
+
+    border:3px solid white;
+    border-radius:50%;
+
+    z-index:10;
+
+    overflow:hidden;
+}
+
+#mapCanvas{
+    width:100%;
+    height:100%;
+}
+
+/* =========================
+   Weapon UI
+========================= */
+
+#weaponUI{
+    position:fixed;
+    bottom:25px;
+    right:30px;
+    text-align:right;
+    z-index:10;
+}
+
+#weaponName{
+    font-size:22px;
+    font-weight:bold;
+}
+
+#ammo{
+    font-size:18px;
+}
+
+/* =========================
+   Message
+========================= */
+
+#message{
+    position:fixed;
+    top:45%;
+    left:50%;
+    transform:translate(-50%,-50%);
+
+    font-size:32px;
+    font-weight:bold;
+
+    text-shadow:0 2px 5px black;
+
+    pointer-events:none;
+    z-index:30;
+}
+
+/* =========================
+   Shop
+========================= */
+
+#shop{
+    display:none;
+
+    position:fixed;
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:400px;
+
+    background:rgba(10,10,15,.95);
+
+    border:2px solid white;
+
+    padding:25px;
+
+    z-index:50;
+}
+
+#shop h2{
+    margin-top:0;
+}
+
+.shopItem{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin:12px 0;
+    padding:10px;
+
+    background:#222;
+}
+
+button{
+    background:#444;
+    color:white;
+
+    border:1px solid #aaa;
+
+    padding:7px 12px;
+
+    cursor:pointer;
+}
+
+button:hover{
+    background:#666;
+}
+
+/* =========================
+   Start screen
+========================= */
+
+#startScreen{
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    height:100%;
+
+    background:
+        radial-gradient(circle,#252525,#050505);
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:100;
+}
+
+#startBox{
+    text-align:center;
+
+    max-width:600px;
+
+    padding:40px;
+
+    background:rgba(0,0,0,.7);
+
+    border:1px solid #777;
+}
+
+#startBox h1{
+    font-size:45px;
+}
+
+#startBox p{
+    line-height:1.7;
+}
+
+#startButton{
+    font-size:20px;
+    padding:12px 30px;
+}
+
+/* =========================
+   Boss bar
+========================= */
+
+#bossBarBox{
+    display:none;
+
+    position:fixed;
+
+    top:20px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:500px;
+
+    z-index:20;
+
+    text-align:center;
+}
+
+#bossBar{
+    height:22px;
+
+    background:#333;
+
+    border:2px solid white;
+}
+
+#bossHP{
+    height:100%;
+    width:100%;
+
+    background:#8e0000;
+}
+
+/* =========================
+   Controls
+========================= */
+
+#controls{
+    position:fixed;
+
+    bottom:20px;
+    left:20px;
+
+    font-size:13px;
+
+    opacity:.75;
+
+    z-index:10;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     START SCREEN
+========================= -->
+
+<div id="startScreen">
+
+<div id="startBox">
+
+<h1>🌙 NIGHT SURVIVAL</h1>
+
+<p>
+你來到了一個沒有盡頭的荒野。
+</p>
+
+<p>
+這個世界沒有主線劇情，也沒有固定目標。<br>
+探索森林、城市、湖泊、山地與沙漠。<br>
+收集資源、購買裝備，並在殭屍群中生存。
+</p>
+
+<p>
+⚠️ 夜晚將永遠存在。
+</p>
+
+<button id="startButton">
+開始遊戲
+</button>
+
+</div>
+
+</div>
+
+<!-- =========================
+     HUD
+========================= -->
+
+<div id="hud">
+
+<div class="barBox">
+
+<div class="barTitle">
+❤️ 生命值
+</div>
+
+<div class="bar">
+<div id="hpBar"></div>
+</div>
+
+</div>
+
+<div class="barBox">
+
+<div class="barTitle">
+⚡ 體力
+</div>
+
+<div class="bar">
+<div id="staminaBar"></div>
+</div>
+
+</div>
+
+<div id="money">
+💰 $100
+</div>
+
+</div>
+
+<!-- CROSSHAIR -->
+
+<div id="crosshair">
+</div>
+
+<!-- MINIMAP -->
+
+<div id="minimap">
+
+<canvas id="mapCanvas" width="200" height="200"></canvas>
+
+</div>
+
+<!-- WEAPON -->
+
+<div id="weaponUI">
+
+<div id="weaponName">
+手槍
+</div>
+
+<div id="ammo">
+🔫 12 / ∞
+</div>
+
+</div>
+
+<!-- BOSS -->
+
+<div id="bossBarBox">
+
+<div>
+👑 BOSS
+</div>
+
+<div id="bossBar">
+
+<div id="bossHP"></div>
+
+</div>
+
+</div>
+
+<!-- MESSAGE -->
+
+<div id="message"></div>
+
+<!-- SHOP -->
+
+<div id="shop">
+
+<h2>🏪 商店</h2>
+
+<p>
+金錢：
+<span id="shopMoney">
+100
+</span>
+</p>
+
+<div class="shopItem">
+
+<span>
+手槍彈藥
+</span>
+
+<button onclick="buyAmmo()">
+$10
+</button>
+
+</div>
+
+<div class="shopItem">
+
+<span>
+醫療包
+</span>
+
+<button onclick="buyMedkit()">
+$30
+</button>
+
+</div>
+
+<div class="shopItem">
+
+<span>
+強化武器
+</span>
+
+<button onclick="upgradeWeapon()">
+$100
+</button>
+
+</div>
+
+<button onclick="closeShop()">
+關閉
+</button>
+
+</div>
+
+<!-- CONTROLS -->
+
+<div id="controls">
+
+WASD：移動　
+滑鼠：視角　
+左鍵：攻擊　
+Shift：奔跑　
+E：商店　
+F：互動　
+ESC：解鎖滑鼠
+
+</div>
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+import {
+    PointerLockControls
+}
+from
+"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
+
+
+/* =========================================================
+   GAME VARIABLES
+========================================================= */
+
+let scene;
+let camera;
+let renderer;
+let controls;
+
+let clock;
+
+let player;
+
+let hp = 100;
+let stamina = 100;
+
+let money = 100;
+
+let ammo = 12;
+
+let weaponDamage = 25;
+
+let gameStarted = false;
+
+let shopOpen = false;
+
+let zombies = [];
+
+let bullets = [];
+
+let trees = [];
+
+let rocks = [];
+
+let boss = null;
+
+let bossSpawned = false;
+
+let worldSize = 5000;
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+const keys = {};
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        keys[event.code] = true;
+
+        if(event.code === "KeyE"){
+            toggleShop();
+        }
+
+        if(event.code === "KeyF"){
+            saveGame();
+        }
+
+    }
+);
+
+document.addEventListener(
+    "keyup",
+    event => {
+
+        keys[event.code] = false;
+
+    }
+);
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+document
+.getElementById("startButton")
+.addEventListener(
+    "click",
+    startGame
+);
+
+
+function startGame(){
+
+    document
+    .getElementById("startScreen")
+    .style.display = "none";
+
+    gameStarted = true;
+
+    init();
+
+    controls.lock();
+
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+function init(){
+
+    scene =
+    new THREE.Scene();
+
+
+    /*
+        永夜
+    */
+
+    scene.background =
+    new THREE.Color(0x02040a);
+
+
+    /*
+        FOG
+    */
+
+    scene.fog =
+    new THREE.FogExp2(
+        0x02040a,
+        0.002
+    );
+
+
+    /*
+        CAMERA
+    */
+
+    camera =
+    new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth /
+        window.innerHeight,
+        0.1,
+        3000
+    );
+
+    camera.position.set(
+        0,
+        3,
+        0
+    );
+
+
+    /*
+        RENDERER
+    */
+
+    renderer =
+    new THREE.WebGLRenderer({
+        antialias:true
+    });
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    renderer.shadowMap.enabled = true;
+
+    document.body.appendChild(
+        renderer.domElement
+    );
+
+
+    /*
+        LIGHT
+    */
+
+    const moonLight =
+    new THREE.DirectionalLight(
+        0x8899ff,
+        1.0
+    );
+
+    moonLight.position.set(
+        100,
+        300,
+        100
+    );
+
+    moonLight.castShadow = true;
+
+    scene.add(
+        moonLight
+    );
+
+
+    /*
+        AMBIENT
+    */
+
+    const ambient =
+    new THREE.AmbientLight(
+        0x334466,
+        1.5
+    );
+
+    scene.add(
+        ambient
+    );
+
+
+    /*
+        PLAYER
+    */
+
+    player = {
+
+        speed:0.25,
+
+        runSpeed:0.5
+
+    };
+
+
+    /*
+        CONTROLS
+    */
+
+    controls =
+    new PointerLockControls(
+        camera,
+        document.body
+    );
+
+
+    /*
+        WORLD
+    */
+
+    createWorld();
+
+
+    /*
+        PLAYER SPAWN
+    */
+
+    camera.position.set(
+        0,
+        3,
+        0
+    );
+
+
+    /*
+        ZOMBIES
+    */
+
+    for(
+        let i=0;
+        i<30;
+        i++
+    ){
+
+        spawnZombie();
+
+    }
+
+
+    /*
+        WEATHER
+    */
+
+    createRain();
+
+
+    /*
+        CLOCK
+    */
+
+    clock =
+    new THREE.Clock();
+
+
+    /*
+        RESIZE
+    */
+
+    window.addEventListener(
+        "resize",
+        onResize
+    );
+
+
+    /*
+        SHOOT
+    */
+
+    document.addEventListener(
+        "mousedown",
+        shoot
+    );
+
+
+    /*
+        START LOOP
+    */
+
+    animate();
+
+}
+
+
+/* =========================================================
+   WORLD
+========================================================= */
+
+function createWorld(){
+
+    /*
+        GROUND
+    */
+
+    const groundGeometry =
+    new THREE.PlaneGeometry(
+        worldSize,
+        worldSize,
+        100,
+        100
+    );
+
+
+    const groundMaterial =
+    new THREE.MeshStandardMaterial({
+        color:0x263326
+    });
+
+
+    const ground =
+    new THREE.Mesh(
+        groundGeometry,
+        groundMaterial
+    );
+
+
+    ground.rotation.x =
+    -Math.PI / 2;
+
+
+    ground.receiveShadow =
+    true;
+
+
+    scene.add(
+        ground
+    );
+
+
+    /*
+        TERRAIN
+    */
+
+    createForest();
+
+    createMountains();
+
+    createLake();
+
+    createCity();
+
+    createDesert();
+
+}
+
+
+/* =========================================================
+   FOREST
+========================================================= */
+
+function createForest(){
+
+    for(
+        let i=0;
+        i<350;
+        i++
+    ){
+
+        const x =
+        THREE.MathUtils.randFloat(
+            -2000,
+            2000
+        );
+
+        const z =
+        THREE.MathUtils.randFloat(
+            -2000,
+            2000
+        );
+
+
+        /*
+            避免全部塞到出生點
+        */
+
+        if(
+            Math.abs(x)<200 &&
+            Math.abs(z)<200
+        ){
+            continue;
+        }
+
+
+        createTree(
+            x,
+            z
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   TREE
+========================================================= */
+
+function createTree(
+    x,
+    z
+){
+
+    const tree =
+    new THREE.Group();
+
+
+    /*
+        TRUNK
+    */
+
+    const trunk =
+    new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            0.5,
+            0.7,
+            5
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x59351f
+        })
+
+    );
+
+
+    trunk.position.y =
+    2.5;
+
+
+    tree.add(
+        trunk
+    );
+
+
+    /*
+        LEAVES
+    */
+
+    const leaves =
+    new THREE.Mesh(
+
+        new THREE.ConeGeometry(
+            3,
+            7,
+            8
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x173d20
+        })
+
+    );
+
+
+    leaves.position.y =
+    6;
+
+
+    tree.add(
+        leaves
+    );
+
+
+    tree.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(
+        tree
+    );
+
+
+    trees.push(
+        tree
+    );
+
+}
+
+
+/* =========================================================
+   MOUNTAINS
+========================================================= */
+
+function createMountains(){
+
+    for(
+        let i=0;
+        i<40;
+        i++
+    ){
+
+        const mountain =
+        new THREE.Mesh(
+
+            new THREE.ConeGeometry(
+                THREE.MathUtils.randFloat(
+                    20,
+                    80
+                ),
+                THREE.MathUtils.randFloat(
+                    40,
+                    150
+                ),
+                7
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x30343a
+            })
+
+        );
+
+
+        mountain.position.set(
+
+            THREE.MathUtils.randFloat(
+                -2200,
+                2200
+            ),
+
+            30,
+
+            THREE.MathUtils.randFloat(
+                -2200,
+                2200
+            )
+
+        );
+
+
+        scene.add(
+            mountain
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LAKE
+========================================================= */
+
+function createLake(){
+
+    const lake =
+    new THREE.Mesh(
+
+        new THREE.CircleGeometry(
+            180,
+            64
+        ),
+
+        new THREE.MeshStandardMaterial({
+
+            color:0x123c55,
+
+            transparent:true,
+
+            opacity:.8
+
+        })
+
+    );
+
+
+    lake.rotation.x =
+    -Math.PI/2;
+
+
+    lake.position.set(
+        700,
+        0.05,
+        500
+    );
+
+
+    scene.add(
+        lake
+    );
+
+}
+
+
+/* =========================================================
+   CITY
+========================================================= */
+
+function createCity(){
+
+    const cityX = -800;
+    const cityZ = -700;
+
+
+    for(
+        let x=0;
+        x<15;
+        x++
+    ){
+
+        for(
+            let z=0;
+            z<15;
+            z++
+        ){
+
+            const height =
+            THREE.MathUtils.randFloat(
+                10,
+                50
+            );
+
+
+            const building =
+            new THREE.Mesh(
+
+                new THREE.BoxGeometry(
+                    25,
+                    height,
+                    25
+                ),
+
+                new THREE.MeshStandardMaterial({
+                    color:0x444444
+                })
+
+            );
+
+
+            building.position.set(
+
+                cityX +
+                x*40,
+
+                height/2,
+
+                cityZ +
+                z*40
+
+            );
+
+
+            scene.add(
+                building
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DESERT
+========================================================= */
+
+function createDesert(){
+
+    const desert =
+    new THREE.Mesh(
+
+        new THREE.PlaneGeometry(
+            900,
+            900
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x9b7944
+        })
+
+    );
+
+
+    desert.rotation.x =
+    -Math.PI/2;
+
+
+    desert.position.set(
+        1000,
+        0.02,
+        -1000
+    );
+
+
+    scene.add(
+        desert
+    );
+
+}
+
+
+/* =========================================================
+   ZOMBIE
+========================================================= */
+
+function spawnZombie(){
+
+    const zombie =
+    new THREE.Group();
+
+
+    /*
+        BODY
+    */
+
+    const body =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            1.5,
+            2.5,
+            1
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x315d3b
+        })
+
+    );
+
+
+    body.position.y =
+    2;
+
+
+    zombie.add(
+        body
+    );
+
+
+    /*
+        HEAD
+    */
+
+    const head =
+    new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            .7,
+            12,
+            12
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x6b8f71
+        })
+
+    );
+
+
+    head.position.y =
+    4;
+
+
+    zombie.add(
+        head
+    );
+
+
+    /*
+        RANDOM SPAWN
+    */
+
+    zombie.position.set(
+
+        THREE.MathUtils.randFloat(
+            -1200,
+            1200
+        ),
+
+        0,
+
+        THREE.MathUtils.randFloat(
+            -1200,
+            1200
+        )
+
+    );
+
+
+    zombie.userData = {
+
+        hp:100,
+
+        speed:
+        THREE.MathUtils.randFloat(
+            .01,
+            .03
+        ),
+
+        attackTimer:0
+
+    };
+
+
+    scene.add(
+        zombie
+    );
+
+
+    zombies.push(
+        zombie
+    );
+
+}
+
+
+/* =========================================================
+   BOSS
+========================================================= */
+
+function spawnBoss(){
+
+    if(bossSpawned)
+        return;
+
+
+    bossSpawned = true;
+
+
+    boss =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            6,
+            10,
+            6
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x5c0a0a
+        })
+
+    );
+
+
+    boss.position.set(
+        0,
+        5,
+        -500
+    );
+
+
+    boss.userData = {
+
+        hp:2000,
+
+        speed:.015
+
+    };
+
+
+    scene.add(
+        boss
+    );
+
+
+    document
+    .getElementById(
+        "bossBarBox"
+    )
+    .style.display =
+    "block";
+
+
+    showMessage(
+        "👑 BOSS 出現！"
+    );
+
+}
+
+
+/* =========================================================
+   SHOOT
+========================================================= */
+
+function shoot(){
+
+    if(!gameStarted)
+        return;
+
+    if(shopOpen)
+        return;
+
+    if(ammo<=0){
+
+        showMessage(
+            "沒有彈藥！"
+        );
+
+        return;
+
+    }
+
+
+    ammo--;
+
+
+    updateHUD();
+
+
+    /*
+        RAYCAST
+    */
+
+    const raycaster =
+    new THREE.Raycaster();
+
+
+    raycaster.setFromCamera(
+        new THREE.Vector2(0,0),
+        camera
+    );
+
+
+    const objects =
+    [
+        ...zombies
+    ];
+
+
+    if(boss)
+        objects.push(
+            boss
+        );
+
+
+    const hits =
+    raycaster.intersectObjects(
+        objects,
+        true
+    );
+
+
+    if(
+        hits.length>0
+    ){
+
+        let target =
+        hits[0].object;
+
+
+        while(
+            target.parent &&
+            !zombies.includes(target) &&
+            target!==boss
+        ){
+
+            target =
+            target.parent;
+
+        }
+
+
+        /*
+            ZOMBIE
+        */
+
+        if(
+            zombies.includes(target)
+        ){
+
+            target.userData.hp -=
+            weaponDamage;
+
+
+            if(
+                target.userData.hp<=0
+            ){
+
+                scene.remove(
+                    target
+                );
+
+
+                zombies =
+                zombies.filter(
+                    z =>
+                    z!==target
+                );
+
+
+                money +=
+                10;
+
+
+                updateHUD();
+
+            }
+
+        }
+
+
+        /*
+            BOSS
+        */
+
+        if(
+            target===boss
+        ){
+
+            boss.userData.hp -=
+            weaponDamage;
+
+
+            document
+            .getElementById(
+                "bossHP"
+            )
+            .style.width =
+            Math.max(
+                0,
+                boss.userData.hp /
+                2000 *
+                100
+            ) + "%";
+
+
+            if(
+                boss.userData.hp<=0
+            ){
+
+                scene.remove(
+                    boss
+                );
+
+                boss =
+                null;
+
+                showMessage(
+                    "👑 BOSS 被擊敗！"
+                );
+
+                document
+                .getElementById(
+                    "bossBarBox"
+                )
+                .style.display =
+                "none";
+
+            }
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE ZOMBIES
+========================================================= */
+
+function updateZombies(){
+
+    zombies.forEach(
+        zombie => {
+
+            const direction =
+            new THREE.Vector3();
+
+            direction
+            .subVectors(
+                camera.position,
+                zombie.position
+            );
+
+
+            direction.y=0;
+
+
+            const distance =
+            direction.length();
+
+
+            if(
+                distance<300
+            ){
+
+                direction.normalize();
+
+
+                zombie.position.add(
+                    direction.multiplyScalar(
+                        zombie.userData.speed
+                    )
+                );
+
+
+                zombie.lookAt(
+                    camera.position.x,
+                    zombie.position.y,
+                    camera.position.z
+                );
+
+
+                /*
+                    攻擊
+                */
+
+                if(
+                    distance<3
+                ){
+
+                    hp -=
+                    0.03;
+
+                    updateHUD();
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE BOSS
+========================================================= */
+
+function updateBoss(){
+
+    if(!boss)
+        return;
+
+
+    const direction =
+    new THREE.Vector3();
+
+
+    direction.subVectors(
+        camera.position,
+        boss.position
+    );
+
+
+    direction.y=0;
+
+
+    const distance =
+    direction.length();
+
+
+    if(
+        distance<800
+    ){
+
+        direction.normalize();
+
+
+        boss.position.add(
+            direction.multiplyScalar(
+                boss.userData.speed
+            )
+        );
+
+
+        boss.lookAt(
+            camera.position
+        );
+
+
+        if(
+            distance<8
+        ){
+
+            hp -=
+            0.1;
+
+            updateHUD();
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   PLAYER MOVEMENT
+========================================================= */
+
+function updatePlayer(){
+
+    if(!controls.isLocked)
+        return;
+
+
+    let speed =
+    player.speed;
+
+
+    /*
+        RUN
+    */
+
+    if(
+        keys["ShiftLeft"] &&
+        stamina>0
+    ){
+
+        speed =
+        player.runSpeed;
+
+        stamina -=
+        0.3;
+
+    }
+    else{
+
+        stamina +=
+        0.15;
+
+    }
+
+
+    stamina =
+    THREE.MathUtils.clamp(
+        stamina,
+        0,
+        100
+    );
+
+
+    /*
+        MOVEMENT
+    */
+
+    if(
+        keys["KeyW"]
+    )
+        controls.moveForward(
+            speed
+        );
+
+
+    if(
+        keys["KeyS"]
+    )
+        controls.moveForward(
+            -speed
+        );
+
+
+    if(
+        keys["KeyA"]
+    )
+        controls.moveRight(
+            -speed
+        );
+
+
+    if(
+        keys["KeyD"]
+    )
+        controls.moveRight(
+            speed
+        );
+
+
+    /*
+        KEEP PLAYER ON MAP
+    */
+
+    camera.position.x =
+    THREE.MathUtils.clamp(
+        camera.position.x,
+        -2400,
+        2400
+    );
+
+
+    camera.position.z =
+    THREE.MathUtils.clamp(
+        camera.position.z,
+        -2400,
+        2400
+    );
+
+
+    camera.position.y=3;
+
+}
+
+
+/* =========================================================
+   RAIN
+========================================================= */
+
+function createRain(){
+
+    const geometry =
+    new THREE.BufferGeometry();
+
+
+    const positions =
+    [];
+
+
+    for(
+        let i=0;
+        i<4000;
+        i++
+    ){
+
+        positions.push(
+
+            THREE.MathUtils.randFloat(
+                -1000,
+                1000
+            ),
+
+            THREE.MathUtils.randFloat(
+                0,
+                500
+            ),
+
+            THREE.MathUtils.randFloat(
+                -1000,
+                1000
+            )
+
+        );
+
+    }
+
+
+    geometry.setAttribute(
+
+        "position",
+
+        new THREE.Float32BufferAttribute(
+            positions,
+            3
+        )
+
+    );
+
+
+    const material =
+    new THREE.PointsMaterial({
+
+        color:0x88aaff,
+
+        size:.7
+
+    });
+
+
+    const rain =
+    new THREE.Points(
+        geometry,
+        material
+    );
+
+
+    scene.add(
+        rain
+    );
+
+
+    window.rain =
+    rain;
+
+}
+
+
+/* =========================================================
+   UPDATE RAIN
+========================================================= */
+
+function updateRain(){
+
+    if(!window.rain)
+        return;
+
+
+    const positions =
+    window.rain.geometry
+    .attributes
+    .position
+    .array;
+
+
+    for(
+        let i=1;
+        i<positions.length;
+        i+=3
+    ){
+
+        positions[i]-=2;
+
+
+        if(
+            positions[i]<0
+        ){
+
+            positions[i]=500;
+
+        }
+
+    }
+
+
+    window.rain.geometry
+    .attributes
+    .position
+    .needsUpdate=true;
+
+}
+
+
+/* =========================================================
+   MINIMAP
+========================================================= */
+
+const mapCanvas =
+document.getElementById(
+    "mapCanvas"
+);
+
+const mapCtx =
+mapCanvas.getContext(
+    "2d"
+);
+
+
+function updateMinimap(){
+
+    mapCtx.fillStyle =
+    "#111";
+
+    mapCtx.fillRect(
+        0,
+        0,
+        200,
+        200
+    );
+
+
+    /*
+        地圖區域
+    */
+
+    mapCtx.fillStyle =
+    "#28452b";
+
+    mapCtx.fillRect(
+        10,
+        10,
+        180,
+        180
+    );
+
+
+    /*
+        城市
+    */
+
+    mapCtx.fillStyle =
+    "#555";
+
+    mapCtx.fillRect(
+        40,
+        45,
+        50,
+        50
+    );
+
+
+    /*
+        湖泊
+    */
+
+    mapCtx.fillStyle =
+    "#164c70";
+
+    mapCtx.beginPath();
+
+    mapCtx.arc(
+        150,
+        70,
+        25,
+        0,
+        Math.PI*2
+    );
+
+    mapCtx.fill();
+
+
+    /*
+        玩家
+    */
+
+    const mapX =
+    100 +
+    camera.position.x /
+    50;
+
+
+    const mapY =
+    100 +
+    camera.position.z /
+    50;
+
+
+    mapCtx.fillStyle =
+    "red";
+
+
+    mapCtx.beginPath();
+
+    mapCtx.arc(
+        mapX,
+        mapY,
+        5,
+        0,
+        Math.PI*2
+    );
+
+    mapCtx.fill();
+
+}
+
+
+/* =========================================================
+   SHOP
+========================================================= */
+
+function toggleShop(){
+
+    shopOpen =
+    !shopOpen;
+
+
+    document
+    .getElementById(
+        "shop"
+    )
+    .style.display =
+    shopOpen
+    ? "block"
+    : "none";
+
+
+    if(shopOpen)
+        controls.unlock();
+
+}
+
+
+function closeShop(){
+
+    shopOpen=false;
+
+
+    document
+    .getElementById(
+        "shop"
+    )
+    .style.display =
+    "none";
+
+}
+
+
+/* =========================================================
+   BUY AMMO
+========================================================= */
+
+window.buyAmmo =
+function(){
+
+    if(
+        money>=10
+    ){
+
+        money-=10;
+
+        ammo+=12;
+
+        updateHUD();
+
+    }
+
+};
+
+
+/* =========================================================
+   MEDKIT
+========================================================= */
+
+window.buyMedkit =
+function(){
+
+    if(
+        money>=30
+    ){
+
+        money-=30;
+
+        hp=Math.min(
+            100,
+            hp+50
+        );
+
+        updateHUD();
+
+    }
+
+};
+
+
+/* =========================================================
+   UPGRADE
+========================================================= */
+
+window.upgradeWeapon =
+function(){
+
+    if(
+        money>=100
+    ){
+
+        money-=100;
+
+        weaponDamage+=10;
+
+        showMessage(
+            "武器升級！"
+        );
+
+        updateHUD();
+
+    }
+
+};
+
+
+/* =========================================================
+   SAVE GAME
+========================================================= */
+
+function saveGame(){
+
+    const saveData={
+
+        hp:hp,
+
+        stamina:stamina,
+
+        money:money,
+
+        ammo:ammo,
+
+        weaponDamage:weaponDamage,
+
+        x:camera.position.x,
+
+        y:camera.position.y,
+
+        z:camera.position.z
+
+    };
+
+
+    localStorage.setItem(
+        "nightSurvivalSave",
+        JSON.stringify(
+            saveData
+        )
+    );
+
+
+    showMessage(
+        "💾 遊戲已儲存"
+    );
+
+}
+
+
+/* =========================================================
+   LOAD GAME
+========================================================= */
+
+function loadGame(){
+
+    const data =
+    localStorage.getItem(
+        "nightSurvivalSave"
+    );
+
+
+    if(!data)
+        return;
+
+
+    const save =
+    JSON.parse(data);
+
+
+    hp =
+    save.hp;
+
+    stamina =
+    save.stamina;
+
+    money =
+    save.money;
+
+    ammo =
+    save.ammo;
+
+    weaponDamage =
+    save.weaponDamage;
+
+
+    camera.position.set(
+
+        save.x,
+
+        save.y,
+
+        save.z
+
+    );
+
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+function updateHUD(){
+
+    document
+    .getElementById(
+        "hpBar"
+    )
+    .style.width =
+    Math.max(
+        0,
+        hp
+    ) + "%";
+
+
+    document
+    .getElementById(
+        "staminaBar"
+    )
+    .style.width =
+    stamina + "%";
+
+
+    document
+    .getElementById(
+        "money"
+    )
+    .textContent =
+    "💰 $" + money;
+
+
+    document
+    .getElementById(
+        "ammo"
+    )
+    .textContent =
+    "🔫 " + ammo + " / ∞";
+
+
+    document
+    .getElementById(
+        "shopMoney"
+    )
+    .textContent =
+    money;
+
+
+    if(
+        hp<=0
+    ){
+
+        gameOver();
+
+    }
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+    text
+){
+
+    const message =
+    document.getElementById(
+        "message"
+    );
+
+
+    message.textContent =
+    text;
+
+
+    setTimeout(
+        () => {
+
+            message.textContent =
+            "";
+
+        },
+        2000
+    );
+
+}
+
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+function gameOver(){
+
+    gameStarted=false;
+
+    controls.unlock();
+
+
+    showMessage(
+        "☠️ 你已死亡"
+    );
+
+
+    setTimeout(
+        () => {
+
+            location.reload();
+
+        },
+        3000
+    );
+
+}
+
+
+/* =========================================================
+   BOSS TRIGGER
+========================================================= */
+
+function checkBoss(){
+
+    const distance =
+    camera.position.length();
+
+
+    if(
+        distance>1000 &&
+        !bossSpawned
+    ){
+
+        spawnBoss();
+
+    }
+
+}
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function onResize(){
+
+    camera.aspect =
+    window.innerWidth /
+    window.innerHeight;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+}
+
+
+/* =========================================================
+   GAME LOOP
+========================================================= */
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    if(
+        !gameStarted
+    )
+        return;
+
+
+    updatePlayer();
+
+    updateZombies();
+
+    updateBoss();
+
+    updateRain();
+
+    updateMinimap();
+
+    checkBoss();
+
+    updateHUD();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+</script>
+
+</body>
+  </html>
