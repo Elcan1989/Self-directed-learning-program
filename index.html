@@ -2,2485 +2,462 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Night Survival 3D</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Night Survival Mobile</title>
 <style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    overflow:hidden;
-    background:#000;
-    font-family:Arial,"Microsoft JhengHei",sans-serif;
-    color:white;
-}
-
-canvas{
-    display:block;
-}
-
-/* =========================
-   HUD
-========================= */
-
-#hud{
-    position:fixed;
-    top:15px;
-    left:15px;
-    width:230px;
-    z-index:10;
-    pointer-events:none;
-}
-
-.barBox{
-    margin-bottom:8px;
-}
-
-.barTitle{
-    font-size:14px;
-    margin-bottom:3px;
-}
-
-.bar{
-    width:220px;
-    height:18px;
-    background:#222;
-    border:2px solid #555;
-}
-
-#hpBar{
-    height:100%;
-    width:100%;
-    background:#d62828;
-}
-
-#staminaBar{
-    height:100%;
-    width:100%;
-    background:#f5c542;
-}
-
-#money{
-    margin-top:10px;
-    font-size:18px;
-}
-
-/* =========================
-   Crosshair
-========================= */
-
-#crosshair{
-    position:fixed;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
-    width:10px;
-    height:10px;
-    border:2px solid white;
-    border-radius:50%;
-    z-index:20;
-    pointer-events:none;
-}
-
-/* =========================
-   Minimap
-========================= */
-
-#minimap{
-    position:fixed;
-    right:20px;
-    top:20px;
-
-    width:200px;
-    height:200px;
-
-    background:rgba(0,0,0,.65);
-
-    border:3px solid white;
-    border-radius:50%;
-
-    z-index:10;
-
-    overflow:hidden;
-}
-
-#mapCanvas{
-    width:100%;
-    height:100%;
-}
-
-/* =========================
-   Weapon UI
-========================= */
-
-#weaponUI{
-    position:fixed;
-    bottom:25px;
-    right:30px;
-    text-align:right;
-    z-index:10;
-}
-
-#weaponName{
-    font-size:22px;
-    font-weight:bold;
-}
-
-#ammo{
-    font-size:18px;
-}
-
-/* =========================
-   Message
-========================= */
-
-#message{
-    position:fixed;
-    top:45%;
-    left:50%;
-    transform:translate(-50%,-50%);
-
-    font-size:32px;
-    font-weight:bold;
-
-    text-shadow:0 2px 5px black;
-
-    pointer-events:none;
-    z-index:30;
-}
-
-/* =========================
-   Shop
-========================= */
-
-#shop{
-    display:none;
-
-    position:fixed;
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    width:400px;
-
-    background:rgba(10,10,15,.95);
-
-    border:2px solid white;
-
-    padding:25px;
-
-    z-index:50;
-}
-
-#shop h2{
-    margin-top:0;
-}
-
-.shopItem{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    margin:12px 0;
-    padding:10px;
-
-    background:#222;
-}
-
-button{
-    background:#444;
-    color:white;
-
-    border:1px solid #aaa;
-
-    padding:7px 12px;
-
-    cursor:pointer;
-}
-
-button:hover{
-    background:#666;
-}
-
-/* =========================
-   Start screen
-========================= */
-
-#startScreen{
-    position:fixed;
-
-    left:0;
-    top:0;
-
-    width:100%;
-    height:100%;
-
-    background:
-        radial-gradient(circle,#252525,#050505);
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    z-index:100;
-}
-
-#startBox{
-    text-align:center;
-
-    max-width:600px;
-
-    padding:40px;
-
-    background:rgba(0,0,0,.7);
-
-    border:1px solid #777;
-}
-
-#startBox h1{
-    font-size:45px;
-}
-
-#startBox p{
-    line-height:1.7;
-}
-
-#startButton{
-    font-size:20px;
-    padding:12px 30px;
-}
-
-/* =========================
-   Boss bar
-========================= */
-
-#bossBarBox{
-    display:none;
-
-    position:fixed;
-
-    top:20px;
-    left:50%;
-
-    transform:translateX(-50%);
-
-    width:500px;
-
-    z-index:20;
-
-    text-align:center;
-}
-
-#bossBar{
-    height:22px;
-
-    background:#333;
-
-    border:2px solid white;
-}
-
-#bossHP{
-    height:100%;
-    width:100%;
-
-    background:#8e0000;
-}
-
-/* =========================
-   Controls
-========================= */
-
-#controls{
-    position:fixed;
-
-    bottom:20px;
-    left:20px;
-
-    font-size:13px;
-
-    opacity:.75;
-
-    z-index:10;
-}
-
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:#02040a;color:white;font-family:Arial,sans-serif;touch-action:none;user-select:none}
+canvas{display:block}
+button{color:white;background:#263440;border:1px solid #82909c;border-radius:12px;padding:12px;font-size:15px;touch-action:none}
+#hud{position:fixed;top:10px;left:10px;z-index:3;font-size:13px;pointer-events:none}
+.bar{width:125px;height:12px;background:#333;margin:4px 0 8px;border:1px solid #888}
+.fill{height:100%;width:100%}
+#hp{background:#e33}#st{background:#eebc36}
+#map{position:fixed;right:10px;top:10px;width:100px;height:100px;border:2px solid white;border-radius:50%;background:#14251a}
+#cross{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:22px;pointer-events:none}
+#joystick{position:fixed;left:22px;bottom:28px;width:125px;height:125px;border:2px solid #ffffff66;border-radius:50%;background:#ffffff14;z-index:4;touch-action:none}
+#knob{position:absolute;left:36px;top:36px;width:49px;height:49px;border-radius:50%;background:#ffffff80;border:2px solid white}
+#actions{position:fixed;right:16px;bottom:22px;display:grid;grid-template-columns:65px 65px;gap:9px;z-index:4}
+#actions button{height:58px;padding:5px;background:#17212bd9}
+#shoot{background:#852a2a!important}
+#status{position:fixed;top:120px;left:50%;transform:translateX(-50%);text-align:center;font-weight:bold;text-shadow:0 2px 5px black;pointer-events:none}
+#start,#shop{position:fixed;z-index:10;inset:0;background:#05080df2;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.panel{max-width:400px;width:100%;background:#121b24;padding:25px;border:1px solid #61717f;border-radius:18px}
+#shop{display:none}
+.shoprow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0}
+#help{position:fixed;bottom:165px;left:12px;font-size:11px;color:#ddd;pointer-events:none}
 </style>
 </head>
-
 <body>
 
-<!-- =========================
-     START SCREEN
-========================= -->
-
-<div id="startScreen">
-
-<div id="startBox">
-
-<h1>🌙 NIGHT SURVIVAL</h1>
-
-<p>
-你來到了一個沒有盡頭的荒野。
-</p>
-
-<p>
-這個世界沒有主線劇情，也沒有固定目標。<br>
-探索森林、城市、湖泊、山地與沙漠。<br>
-收集資源、購買裝備，並在殭屍群中生存。
-</p>
-
-<p>
-⚠️ 夜晚將永遠存在。
-</p>
-
-<button id="startButton">
-開始遊戲
-</button>
-
+<div id="start">
+ <div class="panel">
+  <h1>🌙 NIGHT SURVIVAL</h1>
+  <p>3D 開放世界・殭屍生存</p>
+  <p>探索森林、湖泊、城市和沙漠，收集金錢，購買武器，挑戰 Boss。</p>
+  <p>永夜世界，隨時可能遇到殭屍。</p>
+  <button id="startBtn">進入世界</button>
+  <p style="font-size:12px">需要網路載入 Three.js</p>
+ </div>
 </div>
-
-</div>
-
-<!-- =========================
-     HUD
-========================= -->
 
 <div id="hud">
-
-<div class="barBox">
-
-<div class="barTitle">
-❤️ 生命值
+ ❤️ <span id="hpText">100</span>
+ <div class="bar"><div id="hp" class="fill"></div></div>
+ ⚡ <span id="stText">100</span>
+ <div class="bar"><div id="st" class="fill"></div></div>
+ 💰 $<span id="money">100</span><br>
+ 🔫 <span id="ammo">12</span> 發
 </div>
 
-<div class="bar">
-<div id="hpBar"></div>
+<canvas id="map" width="150" height="150"></canvas>
+<div id="cross">+</div>
+<div id="status"></div>
+<div id="help">左側移動｜右側滑動轉向</div>
+
+<div id="joystick"><div id="knob"></div></div>
+
+<div id="actions">
+ <button id="shoot">🔫 射擊</button>
+ <button id="run">🏃 奔跑</button>
+ <button id="reload">↻ 裝彈</button>
+ <button id="shopBtn">🛒 商店</button>
+ <button id="saveBtn">💾 存檔</button>
+ <button id="bossBtn">👹 Boss</button>
 </div>
-
-</div>
-
-<div class="barBox">
-
-<div class="barTitle">
-⚡ 體力
-</div>
-
-<div class="bar">
-<div id="staminaBar"></div>
-</div>
-
-</div>
-
-<div id="money">
-💰 $100
-</div>
-
-</div>
-
-<!-- CROSSHAIR -->
-
-<div id="crosshair">
-</div>
-
-<!-- MINIMAP -->
-
-<div id="minimap">
-
-<canvas id="mapCanvas" width="200" height="200"></canvas>
-
-</div>
-
-<!-- WEAPON -->
-
-<div id="weaponUI">
-
-<div id="weaponName">
-手槍
-</div>
-
-<div id="ammo">
-🔫 12 / ∞
-</div>
-
-</div>
-
-<!-- BOSS -->
-
-<div id="bossBarBox">
-
-<div>
-👑 BOSS
-</div>
-
-<div id="bossBar">
-
-<div id="bossHP"></div>
-
-</div>
-
-</div>
-
-<!-- MESSAGE -->
-
-<div id="message"></div>
-
-<!-- SHOP -->
 
 <div id="shop">
-
-<h2>🏪 商店</h2>
-
-<p>
-金錢：
-<span id="shopMoney">
-100
-</span>
-</p>
-
-<div class="shopItem">
-
-<span>
-手槍彈藥
-</span>
-
-<button onclick="buyAmmo()">
-$10
-</button>
-
-</div>
-
-<div class="shopItem">
-
-<span>
-醫療包
-</span>
-
-<button onclick="buyMedkit()">
-$30
-</button>
-
-</div>
-
-<div class="shopItem">
-
-<span>
-強化武器
-</span>
-
-<button onclick="upgradeWeapon()">
-$100
-</button>
-
-</div>
-
-<button onclick="closeShop()">
-關閉
-</button>
-
-</div>
-
-<!-- CONTROLS -->
-
-<div id="controls">
-
-WASD：移動　
-滑鼠：視角　
-左鍵：攻擊　
-Shift：奔跑　
-E：商店　
-F：互動　
-ESC：解鎖滑鼠
-
+ <div class="panel">
+  <h2>🛒 生存商店</h2>
+  <p>金錢：$<span id="shopMoney">100</span></p>
+  <div class="shoprow"><span>彈藥 +12（$10）</span><button id="buyAmmo">購買</button></div>
+  <div class="shoprow"><span>醫療包 +40 HP（$30）</span><button id="buyMed">購買</button></div>
+  <div class="shoprow"><span>武器傷害升級（$100）</span><button id="buyUpgrade">購買</button></div>
+  <button id="closeShop">返回遊戲</button>
+ </div>
 </div>
 
 <script type="module">
-
 import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-import {
-    PointerLockControls
+const $=id=>document.getElementById(id);
+let scene,camera,renderer,clock;
+let hp=100,stamina=100,money=100,ammo=12,damage=25;
+let playing=false,shopOpen=false,reloading=false;
+let yaw=0,pitch=0,joyX=0,joyY=0;
+let zombies=[],trees=[],rain,boss=null,bossHP=2000;
+let lastShot=0,lastAttack=0;
+const WORLD=5000;
+const keys={};
+const raycaster=new THREE.Raycaster();
+const v2=new THREE.Vector2(0,0);
+
+function rand(a,b){return a+Math.random()*(b-a)}
+function mat(color,roughness=1){
+ return new THREE.MeshStandardMaterial({color,roughness});
 }
-from
-"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/PointerLockControls.js";
-
-
-/* =========================================================
-   GAME VARIABLES
-========================================================= */
-
-let scene;
-let camera;
-let renderer;
-let controls;
-
-let clock;
-
-let player;
-
-let hp = 100;
-let stamina = 100;
-
-let money = 100;
-
-let ammo = 12;
-
-let weaponDamage = 25;
-
-let gameStarted = false;
-
-let shopOpen = false;
-
-let zombies = [];
-
-let bullets = [];
-
-let trees = [];
-
-let rocks = [];
-
-let boss = null;
-
-let bossSpawned = false;
-
-let worldSize = 5000;
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-const keys = {};
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        keys[event.code] = true;
-
-        if(event.code === "KeyE"){
-            toggleShop();
-        }
-
-        if(event.code === "KeyF"){
-            saveGame();
-        }
-
-    }
-);
-
-document.addEventListener(
-    "keyup",
-    event => {
-
-        keys[event.code] = false;
-
-    }
-);
-
-
-/* =========================================================
-   START GAME
-========================================================= */
-
-document
-.getElementById("startButton")
-.addEventListener(
-    "click",
-    startGame
-);
-
-
-function startGame(){
-
-    document
-    .getElementById("startScreen")
-    .style.display = "none";
-
-    gameStarted = true;
-
-    init();
-
-    controls.lock();
-
+function addMesh(geo,material,x,y,z){
+ const m=new THREE.Mesh(geo,material);
+ m.position.set(x,y,z);scene.add(m);return m;
 }
-
-
-/* =========================================================
-   INIT
-========================================================= */
 
 function init(){
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x030713);
+ scene.fog=new THREE.FogExp2(0x030713,0.0007);
 
-    scene =
-    new THREE.Scene();
+ camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,.1,3000);
+ camera.rotation.order='YXZ';
+ camera.position.set(0,2,0);
 
+ renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+ renderer.setSize(innerWidth,innerHeight);
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ document.body.appendChild(renderer.domElement);
 
-    /*
-        永夜
-    */
+ scene.add(new THREE.HemisphereLight(0x7d91c0,0x182016,1.5));
+ const moon=new THREE.DirectionalLight(0x8da8ff,1.2);
+ moon.position.set(100,200,100);scene.add(moon);
 
-    scene.background =
-    new THREE.Color(0x02040a);
+ const ground=addMesh(
+  new THREE.PlaneGeometry(WORLD,WORLD),
+  mat(0x30432b),0,-.15,0
+ );
+ ground.rotation.x=-Math.PI/2;
 
+ // 不同區域：森林、沙漠、湖泊、城市
+ addMesh(new THREE.CircleGeometry(240,48),mat(0x164b70),700,.02,500)
+  .rotation.x=-Math.PI/2;
 
-    /*
-        FOG
-    */
+ const desert=addMesh(new THREE.PlaneGeometry(900,900),mat(0x927344),1100,-.05,-1000);
+ desert.rotation.x=-Math.PI/2;
 
-    scene.fog =
-    new THREE.FogExp2(
-        0x02040a,
-        0.002
-    );
+ for(let i=0;i<120;i++){
+  const x=rand(-2200,2200),z=rand(-2200,2200);
+  if(Math.abs(x)<100&&Math.abs(z)<100)continue;
+  const h=rand(30,100);
+  addMesh(new THREE.ConeGeometry(rand(20,55),h,7),mat(0x343a40),x,h/2-0.1,z);
+ }
 
+ // 樹木
+ const trunkMat=mat(0x563922),leafMat=mat(0x173d25);
+ for(let i=0;i<500;i++){
+  const x=rand(-2200,2200),z=rand(-2200,2200);
+  if(Math.abs(x)<100&&Math.abs(z)<100)continue;
+  if(Math.abs(x-700)<260&&Math.abs(z-500)<260)continue;
+  if(x>650&&x<1550&&z>-1450&&z< -550)continue;
+  const g=new THREE.Group();
+  const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.4,.65,4,6),trunkMat);
+  trunk.position.y=2;g.add(trunk);
+  const leaves=new THREE.Mesh(new THREE.ConeGeometry(2.5,6,7),leafMat);
+  leaves.position.y=6;g.add(leaves);
+  g.position.set(x,0,z);scene.add(g);trees.push(g);
+ }
 
-    /*
-        CAMERA
-    */
+ // 城市
+ for(let x=0;x<12;x++)for(let z=0;z<12;z++){
+  const h=rand(10,45);
+  const b=addMesh(new THREE.BoxGeometry(24,h,24),
+   mat(Math.random()>.5?0x424852:0x55504b),
+   -850+x*42,h/2,-750+z*42);
+  b.userData.solid=true;
+ }
 
-    camera =
-    new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth /
-        window.innerHeight,
-        0.1,
-        3000
-    );
+ // 雨滴
+ const positions=new Float32Array(1800*3);
+ for(let i=0;i<1800;i++){
+  positions[i*3]=rand(-100,100);
+  positions[i*3+1]=rand(0,80);
+  positions[i*3+2]=rand(-100,100);
+ }
+ const rg=new THREE.BufferGeometry();
+ rg.setAttribute('position',new THREE.BufferAttribute(positions,3));
+ rain=new THREE.Points(rg,new THREE.PointsMaterial({color:0x9abfff,size:.18}));
+ scene.add(rain);
 
-    camera.position.set(
-        0,
-        3,
-        0
-    );
+ for(let i=0;i<22;i++)spawnZombie();
 
-
-    /*
-        RENDERER
-    */
-
-    renderer =
-    new THREE.WebGLRenderer({
-        antialias:true
-    });
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-    renderer.shadowMap.enabled = true;
-
-    document.body.appendChild(
-        renderer.domElement
-    );
-
-
-    /*
-        LIGHT
-    */
-
-    const moonLight =
-    new THREE.DirectionalLight(
-        0x8899ff,
-        1.0
-    );
-
-    moonLight.position.set(
-        100,
-        300,
-        100
-    );
-
-    moonLight.castShadow = true;
-
-    scene.add(
-        moonLight
-    );
-
-
-    /*
-        AMBIENT
-    */
-
-    const ambient =
-    new THREE.AmbientLight(
-        0x334466,
-        1.5
-    );
-
-    scene.add(
-        ambient
-    );
-
-
-    /*
-        PLAYER
-    */
-
-    player = {
-
-        speed:0.25,
-
-        runSpeed:0.5
-
-    };
-
-
-    /*
-        CONTROLS
-    */
-
-    controls =
-    new PointerLockControls(
-        camera,
-        document.body
-    );
-
-
-    /*
-        WORLD
-    */
-
-    createWorld();
-
-
-    /*
-        PLAYER SPAWN
-    */
-
-    camera.position.set(
-        0,
-        3,
-        0
-    );
-
-
-    /*
-        ZOMBIES
-    */
-
-    for(
-        let i=0;
-        i<30;
-        i++
-    ){
-
-        spawnZombie();
-
-    }
-
-
-    /*
-        WEATHER
-    */
-
-    createRain();
-
-
-    /*
-        CLOCK
-    */
-
-    clock =
-    new THREE.Clock();
-
-
-    /*
-        RESIZE
-    */
-
-    window.addEventListener(
-        "resize",
-        onResize
-    );
-
-
-    /*
-        SHOOT
-    */
-
-    document.addEventListener(
-        "mousedown",
-        shoot
-    );
-
-
-    /*
-        START LOOP
-    */
-
-    animate();
-
+ clock=new THREE.Clock();
+ updateHUD();
+ animate();
 }
-
-
-/* =========================================================
-   WORLD
-========================================================= */
-
-function createWorld(){
-
-    /*
-        GROUND
-    */
-
-    const groundGeometry =
-    new THREE.PlaneGeometry(
-        worldSize,
-        worldSize,
-        100,
-        100
-    );
-
-
-    const groundMaterial =
-    new THREE.MeshStandardMaterial({
-        color:0x263326
-    });
-
-
-    const ground =
-    new THREE.Mesh(
-        groundGeometry,
-        groundMaterial
-    );
-
-
-    ground.rotation.x =
-    -Math.PI / 2;
-
-
-    ground.receiveShadow =
-    true;
-
-
-    scene.add(
-        ground
-    );
-
-
-    /*
-        TERRAIN
-    */
-
-    createForest();
-
-    createMountains();
-
-    createLake();
-
-    createCity();
-
-    createDesert();
-
-}
-
-
-/* =========================================================
-   FOREST
-========================================================= */
-
-function createForest(){
-
-    for(
-        let i=0;
-        i<350;
-        i++
-    ){
-
-        const x =
-        THREE.MathUtils.randFloat(
-            -2000,
-            2000
-        );
-
-        const z =
-        THREE.MathUtils.randFloat(
-            -2000,
-            2000
-        );
-
-
-        /*
-            避免全部塞到出生點
-        */
-
-        if(
-            Math.abs(x)<200 &&
-            Math.abs(z)<200
-        ){
-            continue;
-        }
-
-
-        createTree(
-            x,
-            z
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   TREE
-========================================================= */
-
-function createTree(
-    x,
-    z
-){
-
-    const tree =
-    new THREE.Group();
-
-
-    /*
-        TRUNK
-    */
-
-    const trunk =
-    new THREE.Mesh(
-
-        new THREE.CylinderGeometry(
-            0.5,
-            0.7,
-            5
-        ),
-
-        new THREE.MeshStandardMaterial({
-            color:0x59351f
-        })
-
-    );
-
-
-    trunk.position.y =
-    2.5;
-
-
-    tree.add(
-        trunk
-    );
-
-
-    /*
-        LEAVES
-    */
-
-    const leaves =
-    new THREE.Mesh(
-
-        new THREE.ConeGeometry(
-            3,
-            7,
-            8
-        ),
-
-        new THREE.MeshStandardMaterial({
-            color:0x173d20
-        })
-
-    );
-
-
-    leaves.position.y =
-    6;
-
-
-    tree.add(
-        leaves
-    );
-
-
-    tree.position.set(
-        x,
-        0,
-        z
-    );
-
-
-    scene.add(
-        tree
-    );
-
-
-    trees.push(
-        tree
-    );
-
-}
-
-
-/* =========================================================
-   MOUNTAINS
-========================================================= */
-
-function createMountains(){
-
-    for(
-        let i=0;
-        i<40;
-        i++
-    ){
-
-        const mountain =
-        new THREE.Mesh(
-
-            new THREE.ConeGeometry(
-                THREE.MathUtils.randFloat(
-                    20,
-                    80
-                ),
-                THREE.MathUtils.randFloat(
-                    40,
-                    150
-                ),
-                7
-            ),
-
-            new THREE.MeshStandardMaterial({
-                color:0x30343a
-            })
-
-        );
-
-
-        mountain.position.set(
-
-            THREE.MathUtils.randFloat(
-                -2200,
-                2200
-            ),
-
-            30,
-
-            THREE.MathUtils.randFloat(
-                -2200,
-                2200
-            )
-
-        );
-
-
-        scene.add(
-            mountain
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   LAKE
-========================================================= */
-
-function createLake(){
-
-    const lake =
-    new THREE.Mesh(
-
-        new THREE.CircleGeometry(
-            180,
-            64
-        ),
-
-        new THREE.MeshStandardMaterial({
-
-            color:0x123c55,
-
-            transparent:true,
-
-            opacity:.8
-
-        })
-
-    );
-
-
-    lake.rotation.x =
-    -Math.PI/2;
-
-
-    lake.position.set(
-        700,
-        0.05,
-        500
-    );
-
-
-    scene.add(
-        lake
-    );
-
-}
-
-
-/* =========================================================
-   CITY
-========================================================= */
-
-function createCity(){
-
-    const cityX = -800;
-    const cityZ = -700;
-
-
-    for(
-        let x=0;
-        x<15;
-        x++
-    ){
-
-        for(
-            let z=0;
-            z<15;
-            z++
-        ){
-
-            const height =
-            THREE.MathUtils.randFloat(
-                10,
-                50
-            );
-
-
-            const building =
-            new THREE.Mesh(
-
-                new THREE.BoxGeometry(
-                    25,
-                    height,
-                    25
-                ),
-
-                new THREE.MeshStandardMaterial({
-                    color:0x444444
-                })
-
-            );
-
-
-            building.position.set(
-
-                cityX +
-                x*40,
-
-                height/2,
-
-                cityZ +
-                z*40
-
-            );
-
-
-            scene.add(
-                building
-            );
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   DESERT
-========================================================= */
-
-function createDesert(){
-
-    const desert =
-    new THREE.Mesh(
-
-        new THREE.PlaneGeometry(
-            900,
-            900
-        ),
-
-        new THREE.MeshStandardMaterial({
-            color:0x9b7944
-        })
-
-    );
-
-
-    desert.rotation.x =
-    -Math.PI/2;
-
-
-    desert.position.set(
-        1000,
-        0.02,
-        -1000
-    );
-
-
-    scene.add(
-        desert
-    );
-
-}
-
-
-/* =========================================================
-   ZOMBIE
-========================================================= */
 
 function spawnZombie(){
-
-    const zombie =
-    new THREE.Group();
-
-
-    /*
-        BODY
-    */
-
-    const body =
-    new THREE.Mesh(
-
-        new THREE.BoxGeometry(
-            1.5,
-            2.5,
-            1
-        ),
-
-        new THREE.MeshStandardMaterial({
-            color:0x315d3b
-        })
-
-    );
-
-
-    body.position.y =
-    2;
-
-
-    zombie.add(
-        body
-    );
-
-
-    /*
-        HEAD
-    */
-
-    const head =
-    new THREE.Mesh(
-
-        new THREE.SphereGeometry(
-            .7,
-            12,
-            12
-        ),
-
-        new THREE.MeshStandardMaterial({
-            color:0x6b8f71
-        })
-
-    );
-
-
-    head.position.y =
-    4;
-
-
-    zombie.add(
-        head
-    );
-
-
-    /*
-        RANDOM SPAWN
-    */
-
-    zombie.position.set(
-
-        THREE.MathUtils.randFloat(
-            -1200,
-            1200
-        ),
-
-        0,
-
-        THREE.MathUtils.randFloat(
-            -1200,
-            1200
-        )
-
-    );
-
-
-    zombie.userData = {
-
-        hp:100,
-
-        speed:
-        THREE.MathUtils.randFloat(
-            .01,
-            .03
-        ),
-
-        attackTimer:0
-
-    };
-
-
-    scene.add(
-        zombie
-    );
-
-
-    zombies.push(
-        zombie
-    );
-
+ const g=new THREE.Group();
+ const skin=mat(0x68836b),shirt=mat(0x42533e);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(1,1.5,.6),shirt);
+ body.position.y=1.45;g.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(.32,8,8),skin);
+ head.position.y=2.45;g.add(head);
+ for(const side of [-1,1]){
+  const leg=new THREE.Mesh(new THREE.BoxGeometry(.3,.8,.35),shirt);
+  leg.position.set(side*.25,.4,0);g.add(leg);
+  const arm=new THREE.Mesh(new THREE.BoxGeometry(.22,1,.25),skin);
+  arm.position.set(side*.62,1.5,0);g.add(arm);
+ }
+ g.position.set(rand(-1200,1200),0,rand(-1200,1200));
+ g.userData={hp:100,speed:rand(1.0,1.7)};
+ scene.add(g);zombies.push(g);
 }
-
-
-/* =========================================================
-   BOSS
-========================================================= */
 
 function spawnBoss(){
-
-    if(bossSpawned)
-        return;
-
-
-    bossSpawned = true;
-
-
-    boss =
-    new THREE.Mesh(
-
-        new THREE.BoxGeometry(
-            6,
-            10,
-            6
-        ),
-
-        new THREE.MeshStandardMaterial({
-            color:0x5c0a0a
-        })
-
-    );
-
-
-    boss.position.set(
-        0,
-        5,
-        -500
-    );
-
-
-    boss.userData = {
-
-        hp:2000,
-
-        speed:.015
-
-    };
-
-
-    scene.add(
-        boss
-    );
-
-
-    document
-    .getElementById(
-        "bossBarBox"
-    )
-    .style.display =
-    "block";
-
-
-    showMessage(
-        "👑 BOSS 出現！"
-    );
-
+ if(boss)return;
+ boss=new THREE.Group();
+ const red=mat(0x7e111b);
+ const body=new THREE.Mesh(new THREE.BoxGeometry(3,4,2),red);
+ body.position.y=3;boss.add(body);
+ const head=new THREE.Mesh(new THREE.SphereGeometry(1,12,12),mat(0x991d25));
+ head.position.y=5.7;boss.add(head);
+ boss.position.set(camera.position.x+rand(-20,20),0,camera.position.z-35);
+ boss.userData={hp:bossHP};
+ scene.add(boss);
+ $('bossBtn').textContent='👑 Boss戰中';
+ show('👹 Boss 出現！');
 }
 
+function movePlayer(dt){
+ if(!playing||shopOpen)return;
+ let forward=0,side=0;
+ if(keys['KeyW'])forward++;
+ if(keys['KeyS'])forward--;
+ if(keys['KeyD'])side++;
+ if(keys['KeyA'])side--;
+ forward+=-joyY;side+=joyX;
 
-/* =========================================================
-   SHOOT
-========================================================= */
+ const moving=Math.abs(forward)+Math.abs(side)>.05;
+ const running=(keys['ShiftLeft']||keys['ShiftRight'])&&stamina>0&&moving;
+ const speed=(running?9:5)*dt;
+ if(running)stamina=Math.max(0,stamina-25*dt);
+ else stamina=Math.min(100,stamina+14*dt);
+
+ const dx=(Math.sin(yaw)*forward+Math.cos(yaw)*side)*speed;
+ const dz=(-Math.cos(yaw)*forward+Math.sin(yaw)*side)*speed;
+ camera.position.x=THREE.MathUtils.clamp(camera.position.x+dx,-2450,2450);
+ camera.position.z=THREE.MathUtils.clamp(camera.position.z+dz,-2450,2450);
+ camera.position.y=2;
+}
+
+function updateZombies(dt){
+ const now=performance.now();
+ for(const z of zombies){
+  const dx=camera.position.x-z.position.x;
+  const dz=camera.position.z-z.position.z;
+  const d=Math.hypot(dx,dz);
+  if(d<100){
+   z.position.x+=dx/(d||1)*z.userData.speed*dt;
+   z.position.z+=dz/(d||1)*z.userData.speed*dt;
+   z.lookAt(camera.position.x,0,camera.position.z);
+   if(d<2.1&&now-lastAttack>800){
+    hp=Math.max(0,hp-8);lastAttack=now;updateHUD();
+   }
+  }
+ }
+ if(boss){
+  const dx=camera.position.x-boss.position.x,dz=camera.position.z-boss.position.z;
+  const d=Math.hypot(dx,dz);
+  if(d<150){
+   boss.position.x+=dx/(d||1)*2.3*dt;
+   boss.position.z+=dz/(d||1)*2.3*dt;
+   boss.lookAt(camera.position.x,0,camera.position.z);
+   if(d<4&&now-lastAttack>800){
+    hp=Math.max(0,hp-15);lastAttack=now;updateHUD();
+   }
+  }
+ }
+}
 
 function shoot(){
-
-    if(!gameStarted)
-        return;
-
-    if(shopOpen)
-        return;
-
-    if(ammo<=0){
-
-        showMessage(
-            "沒有彈藥！"
-        );
-
-        return;
-
-    }
-
-
-    ammo--;
-
-
-    updateHUD();
-
-
-    /*
-        RAYCAST
-    */
-
-    const raycaster =
-    new THREE.Raycaster();
-
-
-    raycaster.setFromCamera(
-        new THREE.Vector2(0,0),
-        camera
-    );
-
-
-    const objects =
-    [
-        ...zombies
-    ];
-
-
-    if(boss)
-        objects.push(
-            boss
-        );
-
-
-    const hits =
-    raycaster.intersectObjects(
-        objects,
-        true
-    );
-
-
-    if(
-        hits.length>0
-    ){
-
-        let target =
-        hits[0].object;
-
-
-        while(
-            target.parent &&
-            !zombies.includes(target) &&
-            target!==boss
-        ){
-
-            target =
-            target.parent;
-
-        }
-
-
-        /*
-            ZOMBIE
-        */
-
-        if(
-            zombies.includes(target)
-        ){
-
-            target.userData.hp -=
-            weaponDamage;
-
-
-            if(
-                target.userData.hp<=0
-            ){
-
-                scene.remove(
-                    target
-                );
-
-
-                zombies =
-                zombies.filter(
-                    z =>
-                    z!==target
-                );
-
-
-                money +=
-                10;
-
-
-                updateHUD();
-
-            }
-
-        }
-
-
-        /*
-            BOSS
-        */
-
-        if(
-            target===boss
-        ){
-
-            boss.userData.hp -=
-            weaponDamage;
-
-
-            document
-            .getElementById(
-                "bossHP"
-            )
-            .style.width =
-            Math.max(
-                0,
-                boss.userData.hp /
-                2000 *
-                100
-            ) + "%";
-
-
-            if(
-                boss.userData.hp<=0
-            ){
-
-                scene.remove(
-                    boss
-                );
-
-                boss =
-                null;
-
-                showMessage(
-                    "👑 BOSS 被擊敗！"
-                );
-
-                document
-                .getElementById(
-                    "bossBarBox"
-                )
-                .style.display =
-                "none";
-
-            }
-
-        }
-
-    }
-
+ if(!playing||shopOpen||reloading)return;
+ const now=performance.now();
+ if(now-lastShot<300)return;
+ lastShot=now;
+ if(ammo<=0){show('沒有彈藥！');return}
+ ammo--;
+ raycaster.setFromCamera(v2,camera);
+ const targets=[...zombies];
+ if(boss)targets.push(boss);
+ const hits=raycaster.intersectObjects(targets,true);
+ if(hits.length){
+  let obj=hits[0].object;
+  while(obj.parent&&!zombies.includes(obj)&&obj!==boss)obj=obj.parent;
+  if(zombies.includes(obj)){
+   obj.userData.hp-=damage;
+   if(obj.userData.hp<=0){
+    scene.remove(obj);zombies=zombies.filter(z=>z!==obj);
+    money+=10;spawnZombie();updateHUD();
+   }
+  }else if(obj===boss){
+   boss.userData.hp-=damage;
+   if(boss.userData.hp<=0){
+    scene.remove(boss);boss=null;money+=500;
+    $('bossBtn').textContent='👹 召喚 Boss';
+    show('👑 Boss 已擊敗！ +$500');updateHUD();
+   }
+  }
+ }
+ updateHUD();
 }
 
-
-/* =========================================================
-   UPDATE ZOMBIES
-========================================================= */
-
-function updateZombies(){
-
-    zombies.forEach(
-        zombie => {
-
-            const direction =
-            new THREE.Vector3();
-
-            direction
-            .subVectors(
-                camera.position,
-                zombie.position
-            );
-
-
-            direction.y=0;
-
-
-            const distance =
-            direction.length();
-
-
-            if(
-                distance<300
-            ){
-
-                direction.normalize();
-
-
-                zombie.position.add(
-                    direction.multiplyScalar(
-                        zombie.userData.speed
-                    )
-                );
-
-
-                zombie.lookAt(
-                    camera.position.x,
-                    zombie.position.y,
-                    camera.position.z
-                );
-
-
-                /*
-                    攻擊
-                */
-
-                if(
-                    distance<3
-                ){
-
-                    hp -=
-                    0.03;
-
-                    updateHUD();
-
-                }
-
-            }
-
-        }
-    );
-
+function updateRain(dt){
+ const p=rain.geometry.attributes.position.array;
+ for(let i=0;i<p.length;i+=3){
+  p[i]+=camera.position.x*.0005;
+  p[i+1]-=35*dt;
+  p[i+2]+=camera.position.z*.0005;
+  if(p[i+1]<0){
+   p[i]=rand(-70,70)+camera.position.x;
+   p[i+1]=rand(30,70);
+   p[i+2]=rand(-70,70)+camera.position.z;
+  }
+ }
+ rain.geometry.attributes.position.needsUpdate=true;
+ rain.position.set(0,0,0);
 }
 
-
-/* =========================================================
-   UPDATE BOSS
-========================================================= */
-
-function updateBoss(){
-
-    if(!boss)
-        return;
-
-
-    const direction =
-    new THREE.Vector3();
-
-
-    direction.subVectors(
-        camera.position,
-        boss.position
-    );
-
-
-    direction.y=0;
-
-
-    const distance =
-    direction.length();
-
-
-    if(
-        distance<800
-    ){
-
-        direction.normalize();
-
-
-        boss.position.add(
-            direction.multiplyScalar(
-                boss.userData.speed
-            )
-        );
-
-
-        boss.lookAt(
-            camera.position
-        );
-
-
-        if(
-            distance<8
-        ){
-
-            hp -=
-            0.1;
-
-            updateHUD();
-
-        }
-
-    }
-
+function updateMap(){
+ const c=$('map'),ctx=c.getContext('2d');
+ ctx.clearRect(0,0,150,150);
+ ctx.fillStyle='#28462d';ctx.fillRect(0,0,150,150);
+ ctx.fillStyle='#967546';ctx.fillRect(90,0,60,50);
+ ctx.fillStyle='#555';ctx.fillRect(15,15,35,35);
+ ctx.fillStyle='#164b70';ctx.beginPath();ctx.arc(115,105,18,0,Math.PI*2);ctx.fill();
+ const scale=.025;
+ for(const z of zombies){
+  const x=75+(z.position.x-camera.position.x)*scale;
+  const y=75+(z.position.z-camera.position.z)*scale;
+  if(x>0&&x<150&&y>0&&y<150){
+   ctx.fillStyle='#ff5544';ctx.fillRect(x,y,3,3);
+  }
+ }
+ if(boss){
+  ctx.fillStyle='#ff00ff';ctx.fillRect(75+(boss.position.x-camera.position.x)*scale,75+(boss.position.z-camera.position.z)*scale,6,6);
+ }
+ ctx.save();ctx.translate(75,75);ctx.rotate(yaw);
+ ctx.fillStyle='white';ctx.beginPath();ctx.moveTo(0,-7);ctx.lineTo(-5,5);ctx.lineTo(5,5);ctx.fill();ctx.restore();
 }
-
-
-/* =========================================================
-   PLAYER MOVEMENT
-========================================================= */
-
-function updatePlayer(){
-
-    if(!controls.isLocked)
-        return;
-
-
-    let speed =
-    player.speed;
-
-
-    /*
-        RUN
-    */
-
-    if(
-        keys["ShiftLeft"] &&
-        stamina>0
-    ){
-
-        speed =
-        player.runSpeed;
-
-        stamina -=
-        0.3;
-
-    }
-    else{
-
-        stamina +=
-        0.15;
-
-    }
-
-
-    stamina =
-    THREE.MathUtils.clamp(
-        stamina,
-        0,
-        100
-    );
-
-
-    /*
-        MOVEMENT
-    */
-
-    if(
-        keys["KeyW"]
-    )
-        controls.moveForward(
-            speed
-        );
-
-
-    if(
-        keys["KeyS"]
-    )
-        controls.moveForward(
-            -speed
-        );
-
-
-    if(
-        keys["KeyA"]
-    )
-        controls.moveRight(
-            -speed
-        );
-
-
-    if(
-        keys["KeyD"]
-    )
-        controls.moveRight(
-            speed
-        );
-
-
-    /*
-        KEEP PLAYER ON MAP
-    */
-
-    camera.position.x =
-    THREE.MathUtils.clamp(
-        camera.position.x,
-        -2400,
-        2400
-    );
-
-
-    camera.position.z =
-    THREE.MathUtils.clamp(
-        camera.position.z,
-        -2400,
-        2400
-    );
-
-
-    camera.position.y=3;
-
-}
-
-
-/* =========================================================
-   RAIN
-========================================================= */
-
-function createRain(){
-
-    const geometry =
-    new THREE.BufferGeometry();
-
-
-    const positions =
-    [];
-
-
-    for(
-        let i=0;
-        i<4000;
-        i++
-    ){
-
-        positions.push(
-
-            THREE.MathUtils.randFloat(
-                -1000,
-                1000
-            ),
-
-            THREE.MathUtils.randFloat(
-                0,
-                500
-            ),
-
-            THREE.MathUtils.randFloat(
-                -1000,
-                1000
-            )
-
-        );
-
-    }
-
-
-    geometry.setAttribute(
-
-        "position",
-
-        new THREE.Float32BufferAttribute(
-            positions,
-            3
-        )
-
-    );
-
-
-    const material =
-    new THREE.PointsMaterial({
-
-        color:0x88aaff,
-
-        size:.7
-
-    });
-
-
-    const rain =
-    new THREE.Points(
-        geometry,
-        material
-    );
-
-
-    scene.add(
-        rain
-    );
-
-
-    window.rain =
-    rain;
-
-}
-
-
-/* =========================================================
-   UPDATE RAIN
-========================================================= */
-
-function updateRain(){
-
-    if(!window.rain)
-        return;
-
-
-    const positions =
-    window.rain.geometry
-    .attributes
-    .position
-    .array;
-
-
-    for(
-        let i=1;
-        i<positions.length;
-        i+=3
-    ){
-
-        positions[i]-=2;
-
-
-        if(
-            positions[i]<0
-        ){
-
-            positions[i]=500;
-
-        }
-
-    }
-
-
-    window.rain.geometry
-    .attributes
-    .position
-    .needsUpdate=true;
-
-}
-
-
-/* =========================================================
-   MINIMAP
-========================================================= */
-
-const mapCanvas =
-document.getElementById(
-    "mapCanvas"
-);
-
-const mapCtx =
-mapCanvas.getContext(
-    "2d"
-);
-
-
-function updateMinimap(){
-
-    mapCtx.fillStyle =
-    "#111";
-
-    mapCtx.fillRect(
-        0,
-        0,
-        200,
-        200
-    );
-
-
-    /*
-        地圖區域
-    */
-
-    mapCtx.fillStyle =
-    "#28452b";
-
-    mapCtx.fillRect(
-        10,
-        10,
-        180,
-        180
-    );
-
-
-    /*
-        城市
-    */
-
-    mapCtx.fillStyle =
-    "#555";
-
-    mapCtx.fillRect(
-        40,
-        45,
-        50,
-        50
-    );
-
-
-    /*
-        湖泊
-    */
-
-    mapCtx.fillStyle =
-    "#164c70";
-
-    mapCtx.beginPath();
-
-    mapCtx.arc(
-        150,
-        70,
-        25,
-        0,
-        Math.PI*2
-    );
-
-    mapCtx.fill();
-
-
-    /*
-        玩家
-    */
-
-    const mapX =
-    100 +
-    camera.position.x /
-    50;
-
-
-    const mapY =
-    100 +
-    camera.position.z /
-    50;
-
-
-    mapCtx.fillStyle =
-    "red";
-
-
-    mapCtx.beginPath();
-
-    mapCtx.arc(
-        mapX,
-        mapY,
-        5,
-        0,
-        Math.PI*2
-    );
-
-    mapCtx.fill();
-
-}
-
-
-/* =========================================================
-   SHOP
-========================================================= */
-
-function toggleShop(){
-
-    shopOpen =
-    !shopOpen;
-
-
-    document
-    .getElementById(
-        "shop"
-    )
-    .style.display =
-    shopOpen
-    ? "block"
-    : "none";
-
-
-    if(shopOpen)
-        controls.unlock();
-
-}
-
-
-function closeShop(){
-
-    shopOpen=false;
-
-
-    document
-    .getElementById(
-        "shop"
-    )
-    .style.display =
-    "none";
-
-}
-
-
-/* =========================================================
-   BUY AMMO
-========================================================= */
-
-window.buyAmmo =
-function(){
-
-    if(
-        money>=10
-    ){
-
-        money-=10;
-
-        ammo+=12;
-
-        updateHUD();
-
-    }
-
-};
-
-
-/* =========================================================
-   MEDKIT
-========================================================= */
-
-window.buyMedkit =
-function(){
-
-    if(
-        money>=30
-    ){
-
-        money-=30;
-
-        hp=Math.min(
-            100,
-            hp+50
-        );
-
-        updateHUD();
-
-    }
-
-};
-
-
-/* =========================================================
-   UPGRADE
-========================================================= */
-
-window.upgradeWeapon =
-function(){
-
-    if(
-        money>=100
-    ){
-
-        money-=100;
-
-        weaponDamage+=10;
-
-        showMessage(
-            "武器升級！"
-        );
-
-        updateHUD();
-
-    }
-
-};
-
-
-/* =========================================================
-   SAVE GAME
-========================================================= */
-
-function saveGame(){
-
-    const saveData={
-
-        hp:hp,
-
-        stamina:stamina,
-
-        money:money,
-
-        ammo:ammo,
-
-        weaponDamage:weaponDamage,
-
-        x:camera.position.x,
-
-        y:camera.position.y,
-
-        z:camera.position.z
-
-    };
-
-
-    localStorage.setItem(
-        "nightSurvivalSave",
-        JSON.stringify(
-            saveData
-        )
-    );
-
-
-    showMessage(
-        "💾 遊戲已儲存"
-    );
-
-}
-
-
-/* =========================================================
-   LOAD GAME
-========================================================= */
-
-function loadGame(){
-
-    const data =
-    localStorage.getItem(
-        "nightSurvivalSave"
-    );
-
-
-    if(!data)
-        return;
-
-
-    const save =
-    JSON.parse(data);
-
-
-    hp =
-    save.hp;
-
-    stamina =
-    save.stamina;
-
-    money =
-    save.money;
-
-    ammo =
-    save.ammo;
-
-    weaponDamage =
-    save.weaponDamage;
-
-
-    camera.position.set(
-
-        save.x,
-
-        save.y,
-
-        save.z
-
-    );
-
-
-    updateHUD();
-
-}
-
-
-/* =========================================================
-   HUD
-========================================================= */
 
 function updateHUD(){
-
-    document
-    .getElementById(
-        "hpBar"
-    )
-    .style.width =
-    Math.max(
-        0,
-        hp
-    ) + "%";
-
-
-    document
-    .getElementById(
-        "staminaBar"
-    )
-    .style.width =
-    stamina + "%";
-
-
-    document
-    .getElementById(
-        "money"
-    )
-    .textContent =
-    "💰 $" + money;
-
-
-    document
-    .getElementById(
-        "ammo"
-    )
-    .textContent =
-    "🔫 " + ammo + " / ∞";
-
-
-    document
-    .getElementById(
-        "shopMoney"
-    )
-    .textContent =
-    money;
-
-
-    if(
-        hp<=0
-    ){
-
-        gameOver();
-
-    }
-
+ $('hp').style.width=hp+'%';$('hpText').textContent=Math.ceil(hp);
+ $('st').style.width=stamina+'%';$('stText').textContent=Math.ceil(stamina);
+ $('money').textContent=money;$('ammo').textContent=ammo;
+ $('shopMoney').textContent=money;
 }
 
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-function showMessage(
-    text
-){
-
-    const message =
-    document.getElementById(
-        "message"
-    );
-
-
-    message.textContent =
-    text;
-
-
-    setTimeout(
-        () => {
-
-            message.textContent =
-            "";
-
-        },
-        2000
-    );
-
+let msgTimer;
+function show(t){
+ $('status').textContent=t;
+ clearTimeout(msgTimer);msgTimer=setTimeout(()=>$('status').textContent='',2000);
 }
 
-
-/* =========================================================
-   GAME OVER
-========================================================= */
-
-function gameOver(){
-
-    gameStarted=false;
-
-    controls.unlock();
-
-
-    showMessage(
-        "☠️ 你已死亡"
-    );
-
-
-    setTimeout(
-        () => {
-
-            location.reload();
-
-        },
-        3000
-    );
-
+function saveGame(){
+ localStorage.setItem('nightMobileSave',JSON.stringify({
+  hp,stamina,money,ammo,damage,
+  x:camera.position.x,z:camera.position.z,yaw,pitch
+ }));
+ show('💾 存檔完成');
 }
-
-
-/* =========================================================
-   BOSS TRIGGER
-========================================================= */
-
-function checkBoss(){
-
-    const distance =
-    camera.position.length();
-
-
-    if(
-        distance>1000 &&
-        !bossSpawned
-    ){
-
-        spawnBoss();
-
-    }
-
+function loadGame(){
+ try{
+  const s=JSON.parse(localStorage.getItem('nightMobileSave'));
+  if(!s)return;
+  hp=s.hp;stamina=s.stamina;money=s.money;ammo=s.ammo;damage=s.damage;
+  camera.position.set(s.x,2,s.z);yaw=s.yaw;pitch=s.pitch;
+  camera.rotation.set(pitch,yaw,0,'YXZ');updateHUD();
+  show('已載入存檔');
+ }catch(e){show('讀取存檔失敗')}
 }
-
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-function onResize(){
-
-    camera.aspect =
-    window.innerWidth /
-    window.innerHeight;
-
-
-    camera.updateProjectionMatrix();
-
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-}
-
-
-/* =========================================================
-   GAME LOOP
-========================================================= */
 
 function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    if(
-        !gameStarted
-    )
-        return;
-
-
-    updatePlayer();
-
-    updateZombies();
-
-    updateBoss();
-
-    updateRain();
-
-    updateMinimap();
-
-    checkBoss();
-
-    updateHUD();
-
-
-    renderer.render(
-        scene,
-        camera
-    );
-
+ requestAnimationFrame(animate);
+ if(!playing)return;
+ const dt=Math.min(clock.getDelta(),.05);
+ movePlayer(dt);updateZombies(dt);updateRain(dt);updateMap();
+ camera.rotation.set(pitch,yaw,0,'YXZ');
+ if(hp<=0){
+  playing=false;show('☠️ 生存失敗，重新進入遊戲即可重來');
+  $('start').style.display='flex';$('startBtn').textContent='重新開始';
+ }
+ renderer.render(scene,camera);
 }
 
-</script>
+// 虛擬搖桿
+const joy=$('joystick'),knob=$('knob');
+let joyId=null,joyCenter={x:0,y:0};
+joy.addEventListener('pointerdown',e=>{
+ e.preventDefault();joyId=e.pointerId;joy.setPointerCapture(joyId);
+ const r=joy.getBoundingClientRect();joyCenter={x:r.left+r.width/2,y:r.top+r.height/2};
+ updateJoy(e);
+});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)updateJoy(e)});
+function updateJoy(e){
+ const dx=e.clientX-joyCenter.x,dy=e.clientY-joyCenter.y;
+ const len=Math.hypot(dx,dy),max=38,s=Math.min(1,max/(len||1));
+ joyX=dx*s/max;joyY=dy*s/max;
+ knob.style.left=(36+dx*s)+'px';knob.style.top=(36+dy*s)+'px';
+}
+function resetJoy(){
+ joyId=null;joyX=joyY=0;knob.style.left='36px';knob.style.top='36px';
+}
+joy.addEventListener('pointerup',resetJoy);
+joy.addEventListener('pointercancel',resetJoy);
 
+// 右側滑動控制視角
+let lookId=null,lastX=0,lastY=0;
+document.addEventListener('pointerdown',e=>{
+ if(e.target.closest('button')||e.target.closest('#joystick'))return;
+ if(e.clientX<innerWidth*.35)return;
+ lookId=e.pointerId;lastX=e.clientX;lastY=e.clientY;
+});
+document.addEventListener('pointermove',e=>{
+ if(e.pointerId!==lookId||!playing||shopOpen)return;
+ const dx=e.clientX-lastX,dy=e.clientY-lastY;
+ yaw-=dx*.004;pitch-=dy*.004;
+ pitch=THREE.MathUtils.clamp(pitch,-1.45,1.45);
+ lastX=e.clientX;lastY=e.clientY;
+});
+function stopLook(e){if(e.pointerId===lookId)lookId=null}
+document.addEventListener('pointerup',stopLook);
+document.addEventListener('pointercancel',stopLook);
+
+// 按住射擊
+$('shoot').addEventListener('pointerdown',e=>{e.preventDefault();shoot()});
+$('run').addEventListener('pointerdown',()=>keys['ShiftLeft']=true);
+['pointerup','pointercancel','pointerleave'].forEach(ev=>$('run').addEventListener(ev,()=>keys['ShiftLeft']=false));
+$('reload').addEventListener('click',()=>{
+ if(reloading||ammo===12)return;
+ reloading=true;show('裝彈中...');
+ setTimeout(()=>{ammo=12;reloading=false;updateHUD();show('裝彈完成')},1200);
+});
+$('shopBtn').addEventListener('click',()=>{
+ shopOpen=!shopOpen;$('shop').style.display=shopOpen?'flex':'none';
+});
+$('closeShop').addEventListener('click',()=>{$('shop').style.display='none';shopOpen=false});
+$('buyAmmo').addEventListener('click',()=>{if(money>=10){money-=10;ammo+=12;updateHUD()}else show('金錢不足')});
+$('buyMed').addEventListener('click',()=>{if(money>=30){money-=30;hp=Math.min(100,hp+40);updateHUD()}else show('金錢不足')});
+$('buyUpgrade').addEventListener('click',()=>{if(money>=100){money-=100;damage+=10;updateHUD();show('武器傷害升級！')}else show('金錢不足')});
+$('saveBtn').addEventListener('click',saveGame);
+$('bossBtn').addEventListener('click',spawnBoss);
+
+document.addEventListener('keydown',e=>keys[e.code]=true);
+document.addEventListener('keyup',e=>keys[e.code]=false);
+$('startBtn').addEventListener('click',()=>{
+ if(!renderer){
+  init();
+  loadGame();
+ }else{
+  hp=100;stamina=100;money=100;ammo=12;damage=25;
+  camera.position.set(0,2,0);yaw=0;pitch=0;
+  updateHUD();
+ }
+ $('start').style.display='none';playing=true;clock.getDelta();
+});
+addEventListener('resize',()=>{
+ if(!camera||!renderer)return;
+ camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+</script>
 </body>
-  </html>
+</html>
